@@ -1,19 +1,17 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { 
-  onAuthStateChanged, 
-  GoogleAuthProvider, 
-  signInWithPopup,
-  signOut, 
-  User 
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { createContext, useContext, ReactNode } from "react";
+
+// Define a type for our mock user
+interface MockUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: MockUser | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -21,57 +19,28 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Create a static mock user
+const mockUser: MockUser = {
+  uid: 'test-123',
+  email: 'test@example.com',
+  displayName: 'Test User',
+  photoURL: 'https://i.pravatar.cc/150?u=test-123'
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { toast } = useToast();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
+  // Stub out the auth functions to do nothing
   const signInWithGoogle = async () => {
-    setLoading(true);
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
-      router.push("/");
-    } catch (error: any) {
-      console.error("Error signing in with Google: ", error);
-      toast({
-        variant: "destructive",
-        title: "Sign-in Error",
-        description: error.message || "An unknown error occurred during sign-in.",
-      });
-    } finally {
-      setLoading(false);
-    }
+    console.log("signInWithGoogle called. No action taken in mock mode.");
   };
 
   const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      router.push("/login");
-    } catch (error) {
-      console.error("Error signing out: ", error);
-       toast({
-        variant: "destructive",
-        title: "Sign-out Error",
-        description: "Could not sign out. Please try again.",
-      });
-    }
+    console.log("signOut called. No action taken in mock mode.");
   };
 
   const value = {
-    user,
-    loading,
+    user: mockUser,
+    loading: false, // The user is never in a loading state
     signInWithGoogle,
     signOut: handleSignOut,
   };

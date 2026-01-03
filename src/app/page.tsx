@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +17,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type AppState = "idle" | "recording" | "processing" | "preview" | "error";
 type Note = { title: string; content: string };
@@ -29,8 +27,7 @@ const noteSchema = z.object({
 });
 
 export default function Home() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [appState, setAppState] = useState<AppState>("idle");
@@ -43,12 +40,6 @@ export default function Home() {
     resolver: zodResolver(noteSchema),
     defaultValues: { title: "", content: "" },
   });
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
 
   const handleStartRecording = async () => {
     try {
@@ -136,7 +127,8 @@ export default function Home() {
     });
   }
 
-  if (loading || !user) {
+  if (!user) {
+    // This should not happen with the mock user, but it's a good safeguard.
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
