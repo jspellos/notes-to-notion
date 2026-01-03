@@ -28,6 +28,7 @@ export async function processAudio(audioDataUri: string) {
 export async function sendToNotion(title: string, content: string) {
   const notionApiKey = process.env.NOTION_API_KEY;
   const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+  const notionTitlePropertyName = process.env.NOTION_TITLE_PROPERTY_NAME || "Name";
 
   if (!notionApiKey || !notionDatabaseId) {
     return { error: "Notion API Key or Database ID is not configured." };
@@ -63,7 +64,7 @@ export async function sendToNotion(title: string, content: string) {
       body: JSON.stringify({
         parent: { database_id: notionDatabaseId },
         properties: {
-          "Name": { // This is the 'Title' property of a Notion database
+          [notionTitlePropertyName]: {
             title: [
               {
                 text: {
