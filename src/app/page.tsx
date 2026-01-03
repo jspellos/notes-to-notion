@@ -17,13 +17,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Badge } from "@/components/ui/badge";
 
 type AppState = "idle" | "recording" | "processing" | "preview" | "error";
-type Note = { title: string; content: string };
+type Note = { title: string; content: string; categories: string[] };
 
 const noteSchema = z.object({
   title: z.string().min(1, "Title cannot be empty."),
   content: z.string().min(1, "Content cannot be empty."),
+  categories: z.array(z.string()).optional(),
 });
 
 export default function Home() {
@@ -38,7 +40,7 @@ export default function Home() {
 
   const form = useForm<z.infer<typeof noteSchema>>({
     resolver: zodResolver(noteSchema),
-    defaultValues: { title: "", content: "" },
+    defaultValues: { title: "", content: "", categories: [] },
   });
 
   const handleStartRecording = async () => {
@@ -92,14 +94,14 @@ export default function Home() {
   
   const handleDiscard = () => {
     setAudioBlob(null);
-    form.reset({ title: "", content: "" });
+    form.reset({ title: "", content: "", categories: [] });
     setAppState("idle");
   }
 
   const handleSendToNotion = async (data: z.infer<typeof noteSchema>) => {
     setAppState("processing");
     try {
-      const result = await sendToNotion(data.title, data.content);
+      const result = await sendToNotion(data.title, data.content, data.categories || []);
       if (result.error) {
         throw new Error(result.error);
       }
@@ -193,6 +195,23 @@ export default function Home() {
                           <FormLabel>Content</FormLabel>
                           <FormControl>
                             <Textarea placeholder="Your note's content..." rows={10} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="categories"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categories</FormLabel>
+                          <FormControl>
+                             <div className="flex flex-wrap gap-2">
+                              {field.value?.map(category => (
+                                <Badge key={category} variant="secondary">{category}</Badge>
+                              ))}
+                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
