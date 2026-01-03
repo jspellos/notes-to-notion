@@ -38,6 +38,7 @@ export default function Home() {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedNotes, setSavedNotes] = useState<Note[]>([]);
+  const [isClient, setIsClient] = useState(false);
   
   const { startRecording, stopRecording, isRecording } = useRecorder();
 
@@ -47,7 +48,8 @@ export default function Home() {
   });
 
   useEffect(() => {
-    // Load saved notes from localStorage only on the client
+    // This effect runs only on the client, after the component mounts
+    setIsClient(true);
     const storedNotes = window.localStorage.getItem("savedNotes");
     if (storedNotes) {
       setSavedNotes(JSON.parse(storedNotes));
@@ -206,7 +208,7 @@ export default function Home() {
               <p className="text-lg text-muted-foreground">Tap the button to start recording your voice note.</p>
               <RecordButton isRecording={false} onClick={handleStartRecording} />
 
-              {savedNotes.length > 0 && (
+              {isClient && savedNotes.length > 0 && (
                 <div className="mt-8 w-full">
                   <h2 className="text-2xl font-semibold mb-4">Saved Notes</h2>
                   <div className="space-y-4">
