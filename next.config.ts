@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
         port: '',
-        pathname: `/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/**`,
+        pathname: `/studio-9923645100-b578e.appspot.com/**`,
       },
       {
         protocol: 'https',
