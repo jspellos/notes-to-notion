@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      router.push('/');
+      // onAuthStateChanged will handle the user state update and redirection
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       setLoading(false);
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      // onAuthStateChanged will set user to null, triggering redirect in pages
     } catch (error) {
       console.error("Error signing out: ", error);
     }
