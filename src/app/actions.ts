@@ -37,21 +37,6 @@ export async function sendToNotion(title: string, content: string) {
     return { error: "Notion API Key or Database ID is not configured." };
   }
 
-  const contentBlocks = content.match(/[\s\S]{1,2000}/g)?.map(chunk => ({
-    object: 'block',
-    type: 'paragraph',
-    paragraph: {
-      rich_text: [
-        {
-          type: 'text',
-          text: {
-            content: chunk,
-          },
-        },
-      ],
-    },
-  })) || [];
-
   const properties: any = {
     [notionTitlePropertyName]: {
       title: [
@@ -67,20 +52,16 @@ export async function sendToNotion(title: string, content: string) {
         start: new Date().toISOString(),
       },
     },
-  };
-  
-  // The main content of the note is now sent as a separate property
-  // and not as blocks on the page.
-  properties[notionContentPropertyName] = {
-      rich_text: [
-        {
-          text: {
-            content: content.substring(0, 2000), // Rich text has a 2000 char limit
+    [notionContentPropertyName]: {
+        rich_text: [
+          {
+            text: {
+              content: content.substring(0, 2000), // Rich text has a 2000 char limit
+            },
           },
-        },
-      ],
-    };
-
+        ],
+      },
+  };
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
@@ -93,8 +74,6 @@ export async function sendToNotion(title: string, content: string) {
       body: JSON.stringify({
         parent: { database_id: notionDatabaseId },
         properties: properties,
-        // We are now sending content as a property, so we don't need page content blocks.
-        // children: contentBlocks,
       }),
     });
 
