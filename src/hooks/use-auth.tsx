@@ -4,8 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { 
   onAuthStateChanged, 
   GoogleAuthProvider, 
-  signInWithRedirect, 
-  getRedirectResult,
+  signInWithPopup,
   signOut, 
   User 
 } from "firebase/auth";
@@ -34,43 +33,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    // Handle the redirect result
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // This is the signed-in user
-          const user = result.user;
-          setUser(user);
-          router.push("/");
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting redirect result: ", error);
-        toast({
-          variant: "destructive",
-          title: "Sign-in Error",
-          description: error.message,
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-
     return () => unsubscribe();
-  }, [router, toast]);
+  }, []);
 
   const signInWithGoogle = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
-    // After this, the page will redirect to Google's sign-in page.
-    // The result is handled by the useEffect hook when the user is redirected back.
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+      router.push("/");
+    } catch (error: any) {
+      console.error("Error signing in with Google: ", error);
+      toast({
+        variant: "destructive",
+        title: "Sign-in Error",
+        description: error.message || "An unknown error occurred during sign-in.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // onAuthStateChanged will set user to null
       router.push("/login");
     } catch (error) {
       console.error("Error signing out: ", error);
