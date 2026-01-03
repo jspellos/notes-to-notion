@@ -7,7 +7,7 @@ export function Header() {
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <div className="mr-4 flex items-center">
           <BrainCircuit className="h-6 w-6 mr-2 text-primary" />
-          <span className="font-bold">Gemini to Notion</span>
+          <span className="font-bold">Notes to Notion</span>
         </div>
         <div className="flex flex-1 items-center justify-end">
           <nav className="flex items-center">

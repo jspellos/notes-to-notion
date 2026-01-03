@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
-  title: 'Gemini to Notion',
+  title: 'Notes to Notion',
   description: 'A Voice-to-Notion web app powered by Gemini.',
 };
 

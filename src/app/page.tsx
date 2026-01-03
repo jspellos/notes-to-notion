@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -145,7 +146,7 @@ export default function Home() {
         <div className="w-full max-w-2xl">
           {appState === 'idle' && (
             <div className="flex flex-col items-center gap-4">
-              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Gemini to Notion</h1>
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Notes to Notion</h1>
               <p className="text-lg text-muted-foreground">Tap the button to start recording your voice note.</p>
               <RecordButton isRecording={false} onClick={handleStartRecording} />
             </div>
