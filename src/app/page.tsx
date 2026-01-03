@@ -9,8 +9,8 @@ import { Loader2, Mic, AlertTriangle, Send, Trash2, Save, UploadCloud } from "lu
 import { useAuth } from "@/hooks/use-auth";
 import { useRecorder } from "@/hooks/use-recorder";
 import { useToast } from "@/hooks/use-toast";
-import { processAudio } from "@/app/actions/process-audio";
-import { sendToNotion } from "@/app/actions/send-to-notion";
+import { processAudio } from "@/app/_actions/process-audio";
+import { sendToNotion } from "@/app/_actions/send-to-notion";
 
 
 import { Header } from "@/components/layout/header";
@@ -58,7 +58,9 @@ export default function Home() {
   
   const updateAndStoreNotes = (newNotes: Note[]) => {
     setSavedNotes(newNotes);
-    window.localStorage.setItem("savedNotes", JSON.stringify(newNotes));
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem("savedNotes", JSON.stringify(newNotes));
+    }
   }
 
 
@@ -362,5 +364,3 @@ function RecordButton({ isRecording, onClick }: { isRecording: boolean; onClick:
     </div>
   );
 }
-
-    
