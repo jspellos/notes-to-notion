@@ -24,7 +24,7 @@ const mockUser: MockUser = {
   uid: 'test-123',
   email: 'test@example.com',
   displayName: 'Test User',
-  photoURL: 'https://i.pravatar.cc/150?u=test-123'
+  photoURL: null
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
