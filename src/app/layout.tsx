@@ -6,6 +6,7 @@ import { AuthProvider } from '@/hooks/use-auth';
 export const metadata: Metadata = {
   title: 'Notes to Notion',
   description: 'A Voice-to-Notion web app powered by Gemini.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
