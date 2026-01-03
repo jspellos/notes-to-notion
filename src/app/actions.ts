@@ -29,16 +29,15 @@ export async function sendToNotion(title: string, content: string) {
   const notionApiKey = process.env.NOTION_API_KEY;
   const notionDatabaseId = process.env.NOTION_DATABASE_ID;
   const notionTitlePropertyName = process.env.NOTION_TITLE_PROPERTY_NAME || "Name";
+  const notionContentPropertyName = process.env.NOTION_CONTENT_PROPERTY_NAME || "Note Content";
+  const notionDateTimePropertyName = process.env.NOTION_DATETIME_PROPERTY_NAME || "Date & Time";
+
 
   if (!notionApiKey || !notionDatabaseId) {
     return { error: "Notion API Key or Database ID is not configured." };
   }
 
-  // Notion API has a limit of 2000 characters per rich text block.
-  // We'll split the content into chunks to handle long transcripts.
-  const contentChunks = content.match(/[\s\S]{1,2000}/g) || [];
-
-  const blocks = contentChunks.map(chunk => ({
+  const contentBlocks = content.match(/[\s\S]{1,2000}/g)?.map(chunk => ({
     object: 'block',
     type: 'paragraph',
     paragraph: {
@@ -51,7 +50,37 @@ export async function sendToNotion(title: string, content: string) {
         },
       ],
     },
-  }));
+  })) || [];
+
+  const properties: any = {
+    [notionTitlePropertyName]: {
+      title: [
+        {
+          text: {
+            content: title,
+          },
+        },
+      ],
+    },
+    [notionDateTimePropertyName]: {
+      date: {
+        start: new Date().toISOString(),
+      },
+    },
+  };
+  
+  // The main content of the note is now sent as a separate property
+  // and not as blocks on the page.
+  properties[notionContentPropertyName] = {
+      rich_text: [
+        {
+          text: {
+            content: content.substring(0, 2000), // Rich text has a 2000 char limit
+          },
+        },
+      ],
+    };
+
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
@@ -63,18 +92,9 @@ export async function sendToNotion(title: string, content: string) {
       },
       body: JSON.stringify({
         parent: { database_id: notionDatabaseId },
-        properties: {
-          [notionTitlePropertyName]: {
-            title: [
-              {
-                text: {
-                  content: title,
-                },
-              },
-            ],
-          },
-        },
-        children: blocks,
+        properties: properties,
+        // We are now sending content as a property, so we don't need page content blocks.
+        // children: contentBlocks,
       }),
     });
 
