@@ -47,17 +47,18 @@ export default function Home() {
   });
 
   useEffect(() => {
-    // Load saved notes from localStorage on component mount
-    const storedNotes = localStorage.getItem("savedNotes");
+    // Load saved notes from localStorage only on the client
+    const storedNotes = window.localStorage.getItem("savedNotes");
     if (storedNotes) {
       setSavedNotes(JSON.parse(storedNotes));
     }
   }, []);
-
+  
   const updateAndStoreNotes = (newNotes: Note[]) => {
     setSavedNotes(newNotes);
-    localStorage.setItem("savedNotes", JSON.stringify(newNotes));
+    window.localStorage.setItem("savedNotes", JSON.stringify(newNotes));
   }
+
 
   const handleStartRecording = async () => {
     try {
@@ -359,3 +360,5 @@ function RecordButton({ isRecording, onClick }: { isRecording: boolean; onClick:
     </div>
   );
 }
+
+    
