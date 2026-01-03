@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mic, AlertTriangle, Send, Trash2, Save, UploadCloud, Hourglass } from "lucide-react";
+import { Loader2, Mic, AlertTriangle, Send, Trash2, Save, UploadCloud } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useRecorder } from "@/hooks/use-recorder";
 import { useToast } from "@/hooks/use-toast";
-import { processAudio, sendToNotion } from "@/app/actions";
+import { processAudio } from "@/app/actions/process-audio";
+import { sendToNotion } from "@/app/actions/send-to-notion";
+
 
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
